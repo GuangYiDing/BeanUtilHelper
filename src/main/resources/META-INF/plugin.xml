@@ -20,6 +20,7 @@
         &lt;li&gt;自动识别 BeanUtil.copyProperties 与 BeanUtils.copyProperties 方法&lt;/li&gt;
         &lt;li&gt;自动获取源类型与目标类型共有属性生成行注释&lt;/li&gt;
         &lt;li&gt;自动转换多属性复制注释为块注释&lt;/li&gt;
+        &lt;/ul&gt;
     </description>
 
 
