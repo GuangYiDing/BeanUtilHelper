@@ -14,17 +14,14 @@
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
     <description>
-        <![CDATA[
-    BeanUtilHelper,一键显式声明复制的属性
-  ]]></description>
+        &lt;h3&gt; BeanUtilHelper &lt;/h3&gt;
+        &lt;ul&gt;
+        &lt;li&gt;一键生成复制属性的注释,显式声明复制出的属性&lt;/li&gt;
+        &lt;li&gt;自动识别 BeanUtil.copyProperties 与 BeanUtils.copyProperties 方法&lt;/li&gt;
+        &lt;li&gt;自动获取源类型与目标类型共有属性生成行注释&lt;/li&gt;
+        &lt;li&gt;自动转换多属性复制注释为块注释&lt;/li&gt;
+    </description>
 
-
-<!--    <actions>-->
-<!--        &lt;!&ndash; Add your actions here &ndash;&gt;-->
-<!--        <action id="ShowContextAction" class="com.xiaodingsiren.beanutilshelper.AddCommentAction" text="Show Copy Properties" description="Displays the common of properties between two bean">-->
-<!--            <add-to-group group-id="EditorPopupMenu" anchor="last"/>-->
-<!--        </action>-->
-<!--    </actions>-->
 
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->

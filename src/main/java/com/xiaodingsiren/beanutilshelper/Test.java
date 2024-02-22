@@ -3,9 +3,6 @@ package com.xiaodingsiren.beanutilshelper;
 import cn.hutool.core.bean.BeanUtil;
 import lombok.Data;
 
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 /**
  * @author Rose Ding
  * @since 2024/1/30 14:18
@@ -14,49 +11,63 @@ public class Test {
 
 
     @Data
-    public static class A {
+    public static class Person {
         String name;
         Integer age;
-        String c;
-        String d;
-        String e;
+        String email;
+        String phone;
+        String address;
     }
 
     @Data
-    public static class B {
+    public static class Human {
         String name;
-        String age;
-        String d;
-        String c;
-        String e;
+        Integer age;
     }
 
-    public static void main0(String[] args) {
-        A a = new A();
-        a.setAge(18);
-        a.setName("A");
-        a.setC("c");
-        B b = new B();
-        BeanUtil.copyProperties(a, b);
-        System.out.println(b);
+    @Data
+    public static class Employee {
+        String name;
+        Integer age;
+        String email;
+        String phone;
+        String address;
+        String dept;
+        String salary;
     }
+
 
     public static void main(String[] args) {
-        String linePrefix = "        ";
-        String commentText = Stream.of("name", "age")
-                .map(file->linePrefix +"\t\t"+file)
-                .collect(Collectors.joining( ",\n",
-                String.format("""
-                                /*
-                                %s    从 %s 对象中复制属性:
-                                """, linePrefix,"a"),
-                String.format("""
-                                
-                                %s    到 %s 对象中
-                                %s*/
-                                """, linePrefix,"b", linePrefix)));
-        // 将注释与原代码的缩进对齐
-        String commentWithIndent = linePrefix + commentText + '\n';
-        System.out.println(commentWithIndent);
+        Person person = new Person();
+        person.setAge(18);
+        person.setName("Nick");
+        person.setEmail("a@b.com");
+        person.setPhone("123456789");
+        person.setAddress("Shenzhen");
+
+        Human human = new Human();
+        human.setAge(18);
+        human.setName("Rose");
+        // 行注释生成
+        // 从 Person 对象中复制属性: age,name 到 Human 对象中
+        BeanUtil.copyProperties(person, human);
+        // Test.Human(name=Nick, age=18)
+        System.out.println(human);
+
+
+        Employee employee = new Employee();
+        // 多个共有属性自动转换为块注释
+        /*
+            从 Person 对象中复制属性:
+        		address,
+        		age,
+        		email,
+        		name,
+        		phone
+            到 Employee 对象中
+        */
+        BeanUtil.copyProperties(person, employee);
+        // Test.Employee(name=Nick, age=18, email=a@b.com, phone=123456789, address=Shenzhen, dept=null, salary=null)
+        System.out.println(employee);
     }
 }

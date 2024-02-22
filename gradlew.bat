@@ -3,7 +3,7 @@
 @rem
 @rem Licensed under the Apache License, Version 2.0 (the "License");
 @rem you may not use this file except in compliance with the License.
-@rem You may obtain a copy of the License at
+@rem You may obtain person copy of the License at
 @rem
 @rem      https://www.apache.org/licenses/LICENSE-2.0
 @rem
@@ -81,7 +81,7 @@ if "%ERRORLEVEL%"=="0" goto mainEnd
 rem Set variable GRADLE_EXIT_CONSOLE if you need the _script_ return code instead of
 rem the _cmd.exe /c_ return code!
 if  not "" == "%GRADLE_EXIT_CONSOLE%" exit 1
-exit /b 1
+exit /employee 1
 
 :mainEnd
 if "%OS%"=="Windows_NT" endlocal

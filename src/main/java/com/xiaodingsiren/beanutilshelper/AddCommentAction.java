@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -28,7 +29,7 @@ public class AddCommentAction implements IntentionAction {
 
     @Override
     public @IntentionName @NotNull String getText() {
-        return "Bean utils helper";
+        return "BeanUtilHelper - Show copy properties";
     }
 
     @Override
@@ -114,6 +115,7 @@ public class AddCommentAction implements IntentionAction {
                 // 缩进的位置
                 String linePrefix = document.getText(new TextRange(lineStartOffset, methodCallExpression.getTextRange().getStartOffset()));
                 String commentText;
+                // 共有属性超过四个使用块注释显示
                 if (commonPropertyNames.size() > 4) {
                     commentText =  commonPropertyNames.stream()
                             .map(propertyName -> linePrefix + "\t\t" + propertyName)
@@ -144,7 +146,7 @@ public class AddCommentAction implements IntentionAction {
         Set<String> sourceClassFields = Arrays.stream(sourceClass.getAllFields()).map(NavigationItem::getName).collect(Collectors.toSet());
         Set<String> targetClassFields = Arrays.stream(targetClass.getAllFields()).map(NavigationItem::getName).collect(Collectors.toSet());
         sourceClassFields.retainAll(targetClassFields);
-        return sourceClassFields;
+        return sourceClassFields.stream().sorted().collect(Collectors.toCollection(TreeSet::new));
     }
 
 
