@@ -10,4 +10,5 @@
     <li>将光标放置在  BeanUtil.copyProperties 或 BeanUtils.copyProperties 方法上</li>
     <li>唤起意图识别 ( ⌥ + Enter for Mac; Alt + Enter for Win/Linux ),选择 BeanUtilHelper - Show copy properties</li>
 </ol>
+
 ![插件演示](doc/img/插件演示.gif "插件演示")
