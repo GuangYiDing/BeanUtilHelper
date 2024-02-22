@@ -14,13 +14,15 @@
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
     <description>
-        &lt;h3&gt; BeanUtilHelper &lt;/h3&gt;
-        &lt;ul&gt;
-        &lt;li&gt;一键生成复制属性的注释,显式声明复制出的属性&lt;/li&gt;
-        &lt;li&gt;自动识别 BeanUtil.copyProperties 与 BeanUtils.copyProperties 方法&lt;/li&gt;
-        &lt;li&gt;自动获取源类型与目标类型共有属性生成行注释&lt;/li&gt;
-        &lt;li&gt;自动转换多属性复制注释为块注释&lt;/li&gt;
-        &lt;/ul&gt;
+        <![CDATA[
+<h3> BeanUtilHelper </h3>
+<ul>
+    <li>一键生成复制属性的注释,显式声明复制出的属性</li>
+    <li>自动识别 BeanUtil.copyProperties 与 BeanUtils.copyProperties 方法</li>
+    <li>自动获取源类型与目标类型共有属性生成行注释</li>
+    <li>自动转换多属性复制注释为块注释</li>
+</ul>
+]]>
     </description>
 
 
