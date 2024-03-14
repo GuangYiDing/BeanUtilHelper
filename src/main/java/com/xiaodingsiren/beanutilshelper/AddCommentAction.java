@@ -10,15 +10,19 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
+import com.intellij.psi.impl.source.PsiTypeElementImpl;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.psi.util.PsiTypesUtil;
 import com.intellij.psi.util.PsiUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Rose Ding
@@ -72,12 +76,24 @@ public class AddCommentAction implements IntentionAction {
             PsiClass sourceClass = PsiUtil.resolveClassInType(expressions[0].getType());
             PsiClass targetClass = PsiUtil.resolveClassInType(expressions[1].getType());
 
+            // 处理 Class<T> tClass 参数
+            if (expressions[1] instanceof PsiClassObjectAccessExpression){
+                targetClass = PsiTypesUtil.getPsiClass(((PsiTypeElementImpl) expressions[1].getFirstChild()).getType());
+            }
+
             if (sourceClass == null || targetClass == null) {
                 return false;
             }
 
             // 获取并比较两个类的字段，这里省略实际获取字段的逻辑
             Set<String> commonPropertyNames = findCommonPropertyNames(sourceClass, targetClass);
+
+            // 处理 ignoreProperties 参数
+            List<String> ignoreProperties = getIgnoreProperties(expressions);
+            if (expressions.length >2 && ignoreProperties.size() > 0) {
+                ignoreProperties.forEach(commonPropertyNames::remove);
+            }
+
             if (commonPropertyNames.isEmpty()) {
                 return false;
             }
@@ -104,10 +120,22 @@ public class AddCommentAction implements IntentionAction {
                 PsiExpression[] expressions = methodCallExpression.getArgumentList().getExpressions();
                 PsiClass sourceClass = PsiUtil.resolveClassInType(expressions[0].getType());
                 PsiClass targetClass = PsiUtil.resolveClassInType(expressions[1].getType());
+
+                // 处理 Class<T> tClass 参数
+                if (expressions[1] instanceof PsiClassObjectAccessExpression){
+                    targetClass = PsiTypesUtil.getPsiClass(((PsiTypeElementImpl) expressions[1].getFirstChild()).getType());
+                }
+
                 if (sourceClass == null || targetClass == null) {
                     return;
                 }
                 Set<String> commonPropertyNames = findCommonPropertyNames(sourceClass, targetClass);
+
+                // 处理 ignoreProperties 参数
+                List<String> ignoreProperties = getIgnoreProperties(expressions);
+                if (ignoreProperties.size() > 0) {
+                    ignoreProperties.forEach(commonPropertyNames::remove);
+                }
 
                 // 计算要插入注释的位置
                 int lineNum = document.getLineNumber(methodCallExpression.getTextRange().getStartOffset());
@@ -147,6 +175,15 @@ public class AddCommentAction implements IntentionAction {
         Set<String> targetClassFields = Arrays.stream(targetClass.getAllFields()).map(NavigationItem::getName).collect(Collectors.toSet());
         sourceClassFields.retainAll(targetClassFields);
         return sourceClassFields.stream().sorted().collect(Collectors.toCollection(TreeSet::new));
+    }
+
+    private List<String> getIgnoreProperties( PsiExpression[]  expressions) {
+        if (expressions.length > 2 ){
+            return Stream.of(expressions)
+                    .filter(expression -> expression instanceof PsiLiteralExpression)
+                    .map(e -> e.getText().replace("\"","")).collect(Collectors.toList());
+        }
+        return List.of();
     }
 
 

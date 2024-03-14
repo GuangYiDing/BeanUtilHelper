@@ -51,6 +51,11 @@ public class Test {
         // 行注释生成
         // 从 Person 对象中复制属性: age,name 到 Human 对象中
         BeanUtil.copyProperties(person, human);
+        // 从 Person 对象中复制属性: age,name 到 Human 对象中
+        BeanUtil.copyProperties(person, Human.class);
+        // 从 Person 对象中复制属性: age 到 Human 对象中
+        BeanUtil.copyProperties(person, Human.class,"name");
+        BeanUtil.copyProperties(person, human,"name","age");
         // Test.Human(name=Nick, age=18)
         System.out.println(human);
 
