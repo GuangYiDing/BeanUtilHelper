@@ -22,6 +22,7 @@ dependencies {
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
 //    version.set("2022.3.3")
+    type.set("IC") // Target IDE Platform
     type.set("IU") // Target IDE Platform
     localPath.set("/Applications/IntelliJ IDEA.app/Contents")
 
@@ -37,7 +38,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("221")
-        untilBuild.set("231.*")
+        untilBuild.set("241.*")
     }
 
 //    compileJava {
@@ -55,10 +56,10 @@ tasks {
     }
 
 
-    runIde {
-        jvmArgs(
-                "--add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED",
-                "--add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED",
-                "-javaagent:/Applications/mac2022-2023/ja-netfilter.jar=jetbrains")
-    }
+//    runIde {
+//        jvmArgs(
+//                "--add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED",
+//                "--add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED",
+//                "-javaagent:/Applications/mac2022-2023/ja-netfilter.jar=jetbrains")
+//    }
 }
