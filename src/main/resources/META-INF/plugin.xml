@@ -49,6 +49,18 @@
 ]]>
     </description>
 
+<change-notes>
+        <![CDATA[
+        <p>1.0.1-RELEASE</p>
+        <ul>
+            <li> feat: new support for copyProperties(Object source, Class<T> tClass, String... ignoreProperties) method</li>
+        </ul>
+         <ul>
+            <li> feat: 新增对 copyProperties(Object source, Class<T> tClass, String... ignoreProperties) 的支持</li>
+        </ul>
+]]>
+    </change-notes>
+
 
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
