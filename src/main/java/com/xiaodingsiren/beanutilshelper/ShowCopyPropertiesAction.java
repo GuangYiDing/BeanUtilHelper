@@ -1,6 +1,8 @@
 package com.xiaodingsiren.beanutilshelper;
 
+import com.intellij.codeInsight.hint.HintManager;
 import com.intellij.codeInsight.intention.IntentionAction;
+import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo;
 import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.codeInspection.util.IntentionName;
 import com.intellij.navigation.NavigationItem;
@@ -22,14 +24,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author Rose Ding
  * @since 2024/1/30 10:05
  */
-public class AddCommentAction implements IntentionAction {
+public class ShowCopyPropertiesAction implements IntentionAction {
 
+    public static final String NO_COMMON_PROPERTIES_FOUND = "没有找到共有的属性";
 
     @Override
     public @IntentionName @NotNull String getText() {
@@ -38,77 +40,17 @@ public class AddCommentAction implements IntentionAction {
 
     @Override
     public @NotNull @IntentionFamilyName String getFamilyName() {
-        return this.getText();
+        return BeanUtilHelper.BEAN_UTIL_HELPER;
     }
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile psiFile) {
-        if (!(psiFile instanceof PsiJavaFile)) {
-            return false;
-        }
-
-        int offset = editor.getCaretModel().getOffset();
-        PsiElement elementAtCaret = psiFile.findElementAt(offset);
-
-        if (elementAtCaret == null) {
-            return false;
-        }
-
-        PsiMethodCallExpression methodCallExpression = PsiTreeUtil.getParentOfType(elementAtCaret, PsiMethodCallExpression.class);
-
-
-        if (methodCallExpression == null) {
-            return false;
-        }
-        String canonicalText = methodCallExpression.getMethodExpression().getCanonicalText();
-        if (!canonicalText.startsWith("BeanUtil.copyProperties") && !canonicalText.startsWith("BeanUtils.copyProperties")) {
-            return false;
-        }
-
-
-        PsiExpression[] expressions = methodCallExpression.getArgumentList().getExpressions();
-        if (expressions.length < 2) {
-            return false;
-        }
-
-        try {
-            // 假设获取字段名称的过程没有错误，此处省略编写获取字段和类型的详细方法
-            PsiClass sourceClass = PsiUtil.resolveClassInType(expressions[0].getType());
-            PsiClass targetClass = PsiUtil.resolveClassInType(expressions[1].getType());
-
-            // 处理 Class<T> tClass 参数
-            if (expressions[1] instanceof PsiClassObjectAccessExpression){
-                targetClass = PsiTypesUtil.getPsiClass(((PsiTypeElementImpl) expressions[1].getFirstChild()).getType());
-            }
-
-            if (sourceClass == null || targetClass == null) {
-                return false;
-            }
-
-            // 获取并比较两个类的字段，这里省略实际获取字段的逻辑
-            Set<String> commonPropertyNames = findCommonPropertyNames(sourceClass, targetClass);
-
-            // 处理 ignoreProperties 参数
-            List<String> ignoreProperties = getIgnoreProperties(expressions);
-            if (expressions.length >2 && ignoreProperties.size() > 0) {
-                ignoreProperties.forEach(commonPropertyNames::remove);
-            }
-
-            if (commonPropertyNames.isEmpty()) {
-                return false;
-            }
-
-        } catch (Exception e) {
-            // 合适的异常处理
-            return false;
-        }
-
-        return true;
+        return BeanUtilHelper.BeanUtilHelperIsAvailable(editor, psiFile);
     }
+
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile psiFile) throws IncorrectOperationException {
-
         // 实现添加注释的具体逻辑
         WriteCommandAction.runWriteCommandAction(project, () -> {
             Document document = editor.getDocument();
@@ -132,9 +74,14 @@ public class AddCommentAction implements IntentionAction {
                 Set<String> commonPropertyNames = findCommonPropertyNames(sourceClass, targetClass);
 
                 // 处理 ignoreProperties 参数
-                List<String> ignoreProperties = getIgnoreProperties(expressions);
+                List<String> ignoreProperties = BeanUtilHelper.getIgnoreProperties(expressions);
                 if (ignoreProperties.size() > 0) {
                     ignoreProperties.forEach(commonPropertyNames::remove);
+                }
+
+                if (commonPropertyNames.isEmpty()) {
+                    HintManager.getInstance().showInformationHint(editor, NO_COMMON_PROPERTIES_FOUND);
+                    return;
                 }
 
                 // 计算要插入注释的位置
@@ -145,13 +92,13 @@ public class AddCommentAction implements IntentionAction {
                 String commentText;
                 // 共有属性超过四个使用块注释显示
                 if (commonPropertyNames.size() > 4) {
-                    commentText =  commonPropertyNames.stream()
+                    commentText = commonPropertyNames.stream()
                             .map(propertyName -> linePrefix + "\t\t" + propertyName)
                             .collect(Collectors.joining(",\n",
                                     String.format("""
                                             /*
                                             %s    从 %s 对象中复制属性:
-                                            """, linePrefix,  sourceClass.getName()),
+                                            """, linePrefix, sourceClass.getName()),
                                     String.format("""
                                                                             
                                             %s    到 %s 对象中
@@ -169,7 +116,6 @@ public class AddCommentAction implements IntentionAction {
         });
     }
 
-
     private Set<String> findCommonPropertyNames(PsiClass sourceClass, PsiClass targetClass) {
         Set<String> sourceClassFields = Arrays.stream(sourceClass.getAllFields()).map(NavigationItem::getName).collect(Collectors.toSet());
         Set<String> targetClassFields = Arrays.stream(targetClass.getAllFields()).map(NavigationItem::getName).collect(Collectors.toSet());
@@ -177,19 +123,50 @@ public class AddCommentAction implements IntentionAction {
         return sourceClassFields.stream().sorted().collect(Collectors.toCollection(TreeSet::new));
     }
 
-    private List<String> getIgnoreProperties( PsiExpression[]  expressions) {
-        if (expressions.length > 2 ){
-            return Stream.of(expressions)
-                    .filter(expression -> expression instanceof PsiLiteralExpression)
-                    .map(e -> e.getText().replace("\"","")).collect(Collectors.toList());
-        }
-        return List.of();
-    }
 
 
     @Override
     public boolean startInWriteAction() {
-        return false;
+        return true;
+    }
+
+
+    @Override
+    public @NotNull IntentionPreviewInfo generatePreview(@NotNull Project project, @NotNull Editor editor, @NotNull PsiFile file) {
+        BeanUtilHelper.Result result = BeanUtilHelper.invoke(editor, file);
+        if (result == null) {
+            return IntentionPreviewInfo.EMPTY;
+        }
+        PsiClass sourceClass = result.sourceClass();
+        PsiClass targetClass = result.targetClass();
+        String commentText;
+        Set<String> commonPropertyNames = BeanUtilHelper.findCommonPropertyNames(result);
+        // 处理 ignoreProperties 参数
+        List<String> ignoreProperties = result.ignoredProperties();
+        if (ignoreProperties.size() > 0) {
+            ignoreProperties.forEach(commonPropertyNames::remove);
+        }
+        if (commonPropertyNames.isEmpty()) {
+            return new IntentionPreviewInfo.Html(NO_COMMON_PROPERTIES_FOUND);
+        }
+        // 共有属性超过四个使用块注释显示
+        if (commonPropertyNames.size() > 4) {
+            commentText = commonPropertyNames.stream()
+                    .collect(Collectors.joining(",\n",
+                            String.format("""
+                                    /*
+                                       从 %s 对象中复制属性:
+                                    """, sourceClass.getName()),
+                            String.format("""
+                                                                                                                                                
+                                       到 %s 对象中
+                                    */""", targetClass.getName())));
+        } else {
+            commentText = commonPropertyNames.stream().collect(Collectors.joining(",",
+                    String.format("// 从 %s 对象中复制属性: ", sourceClass.getName()),
+                    String.format(" 到 %s 对象中", targetClass.getName())));
+        }
+        return new IntentionPreviewInfo.Html(commentText);
     }
 
 }

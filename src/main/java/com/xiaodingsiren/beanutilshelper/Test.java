@@ -28,7 +28,7 @@ public class Test {
     @Data
     public static class Employee {
         String name;
-        Integer age;
+        Long age;
         String email;
         String phone;
         String address;
@@ -50,11 +50,38 @@ public class Test {
         human.setName("Rose");
         // 行注释生成
         // 从 Person 对象中复制属性: age,name 到 Human 对象中
+        /*
+        差异对比
+        Person ➡️ Human
+        String name ✅ String name
+        Integer age ✅ Integer age
+        String email ❌
+        String phone ❌
+        String address ❌
+        */
         BeanUtil.copyProperties(person, human);
         // 从 Person 对象中复制属性: age,name 到 Human 对象中
+        /*
+        差异对比
+        Person ➡️ Human
+        String name ✅ String name
+        Integer age ✅ Integer age
+        String email ❌
+        String phone ❌
+        String address ❌
+        */
         BeanUtil.copyProperties(person, Human.class);
         // 从 Person 对象中复制属性: age 到 Human 对象中
         BeanUtil.copyProperties(person, Human.class,"name");
+        /*
+        差异对比
+        Person ➡️ Human
+        ~String name~ 🚫 ~String name~
+        ~Integer age~ 🚫 ~Integer age~
+        String email ❌
+        String phone ❌
+        String address ❌
+        */
         BeanUtil.copyProperties(person, human,"name","age");
         // Test.Human(name=Nick, age=18)
         System.out.println(human);
@@ -73,6 +100,7 @@ public class Test {
         */
         BeanUtil.copyProperties(person, employee);
         BeanUtil.copyProperties(person, Employee.class);
+        // 从 Person 对象中复制属性: name,phone 到 Employee 对象中
         // 从 Person 对象中复制属性: name,phone 到 Employee 对象中
         BeanUtil.copyProperties(person, Employee.class,"address","age","email");
         // Test.Employee(name=Nick, age=18, email=a@b.com, phone=123456789, address=Shenzhen, dept=null, salary=null)

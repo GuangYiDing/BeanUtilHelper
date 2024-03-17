@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.xiaodingsiren"
-version = "1.0.1-RELEASE"
+version = "1.0.2-RELEASE"
 
 repositories {
     mavenCentral()
@@ -56,10 +56,10 @@ tasks {
     }
 
 
-//    runIde {
-//        jvmArgs(
-//                "--add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED",
-//                "--add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED",
-//                "-javaagent:/Applications/mac2022-2023/ja-netfilter.jar=jetbrains")
-//    }
+    runIde {
+        jvmArgs(
+                "--add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED",
+                "--add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED",
+                "-javaagent:/Applications/mac2022-2023/ja-netfilter.jar=jetbrains")
+    }
 }
