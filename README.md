@@ -1,8 +1,9 @@
 <h3> BeanUtilHelper </h3>
 <ul>
+    <li>Static inspection of attribute duplication, prompting for duplication where the property name is the same but the type is inconsistent, prompting for duplication where there are no identical properties.</li>
     <li>One-click generation of property copy comments, explicitly declaring the copied properties, one-click preview of copied properties</li>
     <li>One-click generation of different property comments, one-click preview of different properties</li>
-    <li>Automatically identify the <code>BeanUtil.copyProperties</code>and <code>BeanUtils.copyProperties</code>
+<li>Automatically identify the <code>BeanUtil.copyProperties</code>and <code>BeanUtils.copyProperties</code>
         methods.
     </li>
     <li>Automatically retrieve the common properties of the source and target types and generate line comments.</li>
@@ -22,6 +23,7 @@
 
 <h3> BeanUtil助手 </h3>
 <ul>
+    <li>静态检查属性复制,提示属性名相同类型不一致的复制,提示没有相同属性的复制</li>
     <li>一键生成复制属性的注释,显式声明复制出的属性,一键预览复制的属性</li>
     <li>一键生成差异属性的注释,一键预览差异的属性,标识差异化属性,发现潜在问题</li>
     <li>自动识别 <code>BeanUtil.copyProperties</code> 与 <code>BeanUtils.copyProperties</code>方法</li>
@@ -35,9 +37,12 @@
     <li>回车生成注释</li>
 </ol>
 
-插件演示
-![插件演示](doc/img/插件演示.gif "插件演示")
-复制预览
-![复制预览](doc/img/复制预览.png)
 差异预览
 ![差异预览](doc/img/差异预览.png)
+静态检查
+![静态检查](doc/img/静态检查-属性类型不一致.png)
+![静态检查](doc/img/静态检查-没有相同属性.png)
+复制预览
+![复制预览](doc/img/复制预览.png)
+注释生成演示
+![插件演示](doc/img/插件演示.gif "插件演示")

@@ -85,8 +85,6 @@ public class Test {
         BeanUtil.copyProperties(person, human,"name","age");
         // Test.Human(name=Nick, age=18)
         System.out.println(human);
-
-
         Employee employee = new Employee();
         // 多个共有属性自动转换为块注释
         /*

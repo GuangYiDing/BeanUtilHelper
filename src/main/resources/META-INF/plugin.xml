@@ -18,9 +18,10 @@
 <tag>BeanUtil, BeanUtils,Code Tools</tag>
 <h3> BeanUtilHelper </h3>
 <ul>
+    <li>Static inspection of attribute duplication, prompting for duplication where the property name is the same but the type is inconsistent, prompting for duplication where there are no identical properties.</li>
     <li>One-click generation of property copy comments, explicitly declaring the copied properties, one-click preview of copied properties</li>
     <li>One-click generation of different property comments, one-click preview of different properties</li>
-    <li>Automatically identify the <code>BeanUtil.copyProperties</code>and <code>BeanUtils.copyProperties</code>
+<li>Automatically identify the <code>BeanUtil.copyProperties</code>and <code>BeanUtils.copyProperties</code>
         methods.
     </li>
     <li>Automatically retrieve the common properties of the source and target types and generate line comments.</li>
@@ -40,6 +41,7 @@
 
 <h3> BeanUtil助手 </h3>
 <ul>
+    <li>静态检查属性复制,提示属性名相同类型不一致的复制,提示没有相同属性的复制</li>
     <li>一键生成复制属性的注释,显式声明复制出的属性,一键预览复制的属性</li>
     <li>一键生成差异属性的注释,一键预览差异的属性,标识差异化属性,发现潜在问题</li>
     <li>自动识别 <code>BeanUtil.copyProperties</code> 与 <code>BeanUtils.copyProperties</code>方法</li>
@@ -57,6 +59,13 @@
 
 <change-notes>
         <![CDATA[
+         <p>1.0.3-RELEASE</p>
+        <ul>
+           <li>feat: Static inspection of attribute duplication, prompting for duplication where the property name is the same but the type is inconsistent, prompting for duplication where there are no identical properties.</li>
+        </ul>
+         <ul>
+            <li> feat: 静态检查属性复制,提示属性名相同类型不一致的复制,提示没有相同属性的复制</li>
+        </ul>
         <p>1.0.2-RELEASE</p>
         <ul>
            <li>feat: Preview copied properties, one-click view different properties, generate different properties comments</li>
@@ -95,5 +104,21 @@
             <className>com.xiaodingsiren.beanutilshelper.ShowDiffPropertiesAction</className>
             <category>BeanUtilHelper</category>
         </intentionAction>
+
+
+        <localInspection
+                language="JAVA"
+                bundle="messages.InspectionBundle"
+                key="beanutilhelper.inspection.display.name"
+                groupPath="Java"
+                groupBundle="messages.InspectionsBundle"
+                groupKey="group.names.javabeans.issues"
+                enabledByDefault="true"
+                level="WARNING"
+                implementationClass="com.xiaodingsiren.beanutilshelper.BeanUtilsInspection"
+        />
     </extensions>
+    <resource-bundle>
+
+    </resource-bundle>
 </idea-plugin>

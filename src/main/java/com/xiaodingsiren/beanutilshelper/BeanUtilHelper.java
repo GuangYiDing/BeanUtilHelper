@@ -47,10 +47,8 @@ public class BeanUtilHelper {
         return canonicalText.startsWith(BEAN_UTIL_COPY_PROPERTIES) || canonicalText.startsWith(BEAN_UTILS_COPY_PROPERTIES);
     }
 
-    public static Result invoke(Editor editor, PsiFile psiFile) {
-        int offset = editor.getCaretModel().getOffset();
-        PsiElement elementAtCaret = psiFile.findElementAt(offset);
-        PsiMethodCallExpression methodCallExpression = PsiTreeUtil.getParentOfType(elementAtCaret, PsiMethodCallExpression.class);
+
+    public static Result invoke(PsiMethodCallExpression methodCallExpression) {
         if (methodCallExpression == null) {
             return null;
         }
@@ -83,6 +81,14 @@ public class BeanUtilHelper {
         targetProperties = targetProperties.stream().map(s -> markProperties(ignoreProperties, sourcePropertyMap, s)).collect(Collectors.toList());
 
         return new Result(sourceClass, targetClass, sourceProperties, targetProperties, ignoreProperties);
+
+    }
+
+    public static Result invoke(Editor editor, PsiFile psiFile) {
+        int offset = editor.getCaretModel().getOffset();
+        PsiElement elementAtCaret = psiFile.findElementAt(offset);
+        PsiMethodCallExpression methodCallExpression = PsiTreeUtil.getParentOfType(elementAtCaret, PsiMethodCallExpression.class);
+        return invoke(methodCallExpression);
     }
 
     @NotNull
