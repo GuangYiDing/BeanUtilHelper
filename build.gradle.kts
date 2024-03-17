@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.xiaodingsiren"
-version = "1.0.3-RELEASE"
+version = "1.0.4-RELEASE"
 
 repositories {
     mavenCentral()

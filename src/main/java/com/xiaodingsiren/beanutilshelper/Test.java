@@ -100,7 +100,10 @@ public class Test {
         BeanUtil.copyProperties(person, Employee.class);
         // 从 Person 对象中复制属性: name,phone 到 Employee 对象中
         // 从 Person 对象中复制属性: name,phone 到 Employee 对象中
-        BeanUtil.copyProperties(person, Employee.class,"address","age","email");
+        Employee target = new Employee();
+        target.setName(person.getName());
+        target.setPhone(person.getPhone());
+
         // Test.Employee(name=Nick, age=18, email=a@b.com, phone=123456789, address=Shenzhen, dept=null, salary=null)
         System.out.println(employee);
     }

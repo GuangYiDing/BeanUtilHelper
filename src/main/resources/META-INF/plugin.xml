@@ -18,6 +18,7 @@
 <tag>BeanUtil, BeanUtils,Code Tools</tag>
 <h3> BeanUtilHelper </h3>
 <ul>
+    <li>Generate GetterSetter Code with One Click.</li>
     <li>Static inspection of attribute duplication, prompting for duplication where the property name is the same but the type is inconsistent, prompting for duplication where there are no identical properties.</li>
     <li>One-click generation of property copy comments, explicitly declaring the copied properties, one-click preview of copied properties</li>
     <li>One-click generation of different property comments, one-click preview of different properties</li>
@@ -31,8 +32,7 @@
 <ol>
     <li>Place the cursor on the <code>BeanUtil.copyProperties</code> or <code>BeanUtils.copyProperties</code> method.
     </li>
-    <li>Trigger Intent action (⌥ + Enter for Mac; Alt + Enter for Win/Linux) and select "BeanUtilHelper - Show copy
-        properties" or "BeanUtilHelper - Show different properties" to preview.
+    <li>"Invoke Intention Action ( ⌥ + Enter for Mac; Alt + Enter for Win/Linux ), select the corresponding option of 'BeanUtilHelper'".
     </li>
     <li>
         Press enter to generate comments;
@@ -41,6 +41,7 @@
 
 <h3> BeanUtil助手 </h3>
 <ul>
+    <li>一键生成 GetterSetter 代码</li>
     <li>静态检查属性复制,提示属性名相同类型不一致的复制,提示没有相同属性的复制</li>
     <li>一键生成复制属性的注释,显式声明复制出的属性,一键预览复制的属性</li>
     <li>一键生成差异属性的注释,一键预览差异的属性,标识差异化属性,发现潜在问题</li>
@@ -51,24 +52,31 @@
 <h3>使用方式</h3>
 <ol>
     <li>将光标放置在 <code>BeanUtil.copyProperties</code> 或 <code>BeanUtils.copyProperties</code> 方法上</li>
-    <li>唤起意图动作 ( ⌥ + Enter for Mac; Alt + Enter for Win/Linux ),选择 "BeanUtilHelper - Show copy properties" 或 "BeanUtilHelper - Show different properties" 预览</li>
-    <li>回车生成注释</li>
+    <li>唤起意图动作 ( ⌥ + Enter for Mac; Alt + Enter for Win/Linux ),选择 "BeanUtilHelper"的对应选项</li>
+    <li>回车生成注释或代码</li>
 </ol>
 ]]>
     </description>
 
 <change-notes>
         <![CDATA[
+        <p>1.0.4-RELEASE</p>
+        <ul>
+           <li> feat: Generate GetterSetter Code with One Click.</li>
+        </ul>
+         <ul>
+            <li> feat: 一键生成 GetterSetter 代码</li>
+        </ul>
          <p>1.0.3-RELEASE</p>
         <ul>
-           <li>feat: Static inspection of attribute duplication, prompting for duplication where the property name is the same but the type is inconsistent, prompting for duplication where there are no identical properties.</li>
+           <li> feat: Static inspection of attribute duplication, prompting for duplication where the property name is the same but the type is inconsistent, prompting for duplication where there are no identical properties.</li>
         </ul>
          <ul>
             <li> feat: 静态检查属性复制,提示属性名相同类型不一致的复制,提示没有相同属性的复制</li>
         </ul>
         <p>1.0.2-RELEASE</p>
         <ul>
-           <li>feat: Preview copied properties, one-click view different properties, generate different properties comments</li>
+           <li> feat: Preview copied properties, one-click view different properties, generate different properties comments</li>
         </ul>
          <ul>
             <li> feat: 预览复制属性,一键查看差异属性,差异属性注释生成</li>
@@ -104,7 +112,11 @@
             <className>com.xiaodingsiren.beanutilshelper.ShowDiffPropertiesAction</className>
             <category>BeanUtilHelper</category>
         </intentionAction>
-
+        <intentionAction>
+            <language>JAVA</language>
+            <className>com.xiaodingsiren.beanutilshelper.ToSetterAction</className>
+            <category>BeanUtilHelper</category>
+        </intentionAction>
 
         <localInspection
                 language="JAVA"
