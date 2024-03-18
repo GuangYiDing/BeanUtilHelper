@@ -55,6 +55,9 @@
     <li>唤起意图动作 ( ⌥ + Enter for Mac; Alt + Enter for Win/Linux ),选择 "BeanUtilHelper"的对应选项</li>
     <li>回车生成注释或代码</li>
 </ol>
+<p>If you find this plugin helpful, feel free to give me a star! ~</p>
+<p>如何你觉得这个插件对你有帮助,欢迎给我点一个star~</p>
+<a href="https://github.com/GuangYiDing/BeanUtilHelper">GitHub - BeanUtilHelper </a>
 ]]>
     </description>
 
