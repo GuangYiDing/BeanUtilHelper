@@ -1,4 +1,4 @@
-package com.xiaodingsiren.beanutilshelper;
+package com.xiaodingsiren.beanutilshelper.action;
 
 import com.intellij.codeInsight.hint.HintManager;
 import com.intellij.codeInsight.intention.IntentionAction;
@@ -12,17 +12,12 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
-import com.intellij.psi.impl.source.PsiTypeElementImpl;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.psi.util.PsiTypesUtil;
-import com.intellij.psi.util.PsiUtil;
 import com.intellij.util.IncorrectOperationException;
+import com.xiaodingsiren.beanutilshelper.BeanUtilHelper;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -59,14 +54,14 @@ public class ShowCopyPropertiesAction implements IntentionAction {
             PsiMethodCallExpression methodCallExpression = PsiTreeUtil.getParentOfType(elementAtCaret, PsiMethodCallExpression.class);
 
             if (methodCallExpression != null) {
-                PsiExpression[] expressions = methodCallExpression.getArgumentList().getExpressions();
-                PsiClass sourceClass = PsiUtil.resolveClassInType(expressions[0].getType());
-                PsiClass targetClass = PsiUtil.resolveClassInType(expressions[1].getType());
+                BeanUtilHelper.Result result = BeanUtilHelper.invoke(methodCallExpression);
 
-                // 处理 Class<T> tClass 参数
-                if (expressions[1] instanceof PsiClassObjectAccessExpression){
-                    targetClass = PsiTypesUtil.getPsiClass(((PsiTypeElementImpl) expressions[1].getFirstChild()).getType());
+                if (result == null) {
+                    return;
                 }
+
+                PsiClass sourceClass = result.sourceClass();
+                PsiClass targetClass = result.targetClass();
 
                 if (sourceClass == null || targetClass == null) {
                     return;
@@ -74,8 +69,8 @@ public class ShowCopyPropertiesAction implements IntentionAction {
                 Set<String> commonPropertyNames = findCommonPropertyNames(sourceClass, targetClass);
 
                 // 处理 ignoreProperties 参数
-                List<String> ignoreProperties = BeanUtilHelper.getIgnoreProperties(expressions);
-                if (ignoreProperties.size() > 0) {
+                List<String> ignoreProperties = result.ignoredProperties();
+                if (!ignoreProperties.isEmpty()) {
                     ignoreProperties.forEach(commonPropertyNames::remove);
                 }
 
@@ -100,7 +95,7 @@ public class ShowCopyPropertiesAction implements IntentionAction {
                                             %s    从 %s 对象中复制属性:
                                             """, linePrefix, sourceClass.getName()),
                                     String.format("""
-                                                                            
+                                                                                        
                                             %s    到 %s 对象中
                                             %s*/""", linePrefix, targetClass.getName(), linePrefix)));
                 } else {
@@ -143,7 +138,7 @@ public class ShowCopyPropertiesAction implements IntentionAction {
         Set<String> commonPropertyNames = BeanUtilHelper.findCommonPropertyNames(result);
         // 处理 ignoreProperties 参数
         List<String> ignoreProperties = result.ignoredProperties();
-        if (ignoreProperties.size() > 0) {
+        if (!ignoreProperties.isEmpty()) {
             ignoreProperties.forEach(commonPropertyNames::remove);
         }
         if (commonPropertyNames.isEmpty()) {
@@ -158,7 +153,7 @@ public class ShowCopyPropertiesAction implements IntentionAction {
                                        从 %s 对象中复制属性:
                                     """, sourceClass.getName()),
                             String.format("""
-                                                                                                                                                
+                                                                        
                                        到 %s 对象中
                                     */""", targetClass.getName())));
         } else {

@@ -1,4 +1,4 @@
-package com.xiaodingsiren.beanutilshelper;
+package com.xiaodingsiren.beanutilshelper.action;
 
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo;
@@ -12,6 +12,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
+import com.xiaodingsiren.beanutilshelper.BeanUtilHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -49,12 +50,19 @@ public class ToSetterAction implements IntentionAction {
 
             if (methodCallExpression != null) {
                 BeanUtilHelper.Result invoke = BeanUtilHelper.invoke(methodCallExpression);
+                if (invoke == null) {
+                    return;
+                }
+                PsiClass sourceClass = invoke.sourceClass();
+                PsiClass targetClass = invoke.targetClass();
+                if (sourceClass == null || targetClass == null) {
+                    return;
+                }
                 PsiExpression[] expressions = methodCallExpression.getArgumentList().getExpressions();
                 String sourceArgsName = expressions[0].getText();
-                PsiClass targetClass = invoke.targetClass();
                 Set<String> commonPropertyNames = BeanUtilHelper.findCommonPropertyNames(invoke);
                 List<String> ignoreProperties = invoke.ignoredProperties();
-                if (ignoreProperties.size() > 0) {
+                if (!ignoreProperties.isEmpty()) {
                     ignoreProperties.forEach(commonPropertyNames::remove);
                 }
 
@@ -107,7 +115,7 @@ public class ToSetterAction implements IntentionAction {
             PsiClass targetClass = invoke.targetClass();
             Set<String> commonPropertyNames = BeanUtilHelper.findCommonPropertyNames(invoke);
             List<String> ignoreProperties = invoke.ignoredProperties();
-            if (ignoreProperties.size() > 0) {
+            if (!ignoreProperties.isEmpty()) {
                 ignoreProperties.forEach(commonPropertyNames::remove);
             }
 

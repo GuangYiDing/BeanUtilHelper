@@ -1,8 +1,7 @@
-package com.xiaodingsiren.beanutilshelper;
+package com.xiaodingsiren.beanutilshelper.action;
 
 import cn.hutool.core.collection.CollStreamUtil;
 import cn.hutool.core.util.StrUtil;
-import com.google.common.base.Joiner;
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo;
 import com.intellij.codeInspection.util.IntentionFamilyName;
@@ -15,6 +14,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
+import com.xiaodingsiren.beanutilshelper.BeanUtilHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -61,9 +61,11 @@ public class ShowDiffPropertiesAction implements IntentionAction {
                 if (result == null) {
                     return;
                 }
-
                 PsiClass sourceClass = result.sourceClass();
                 PsiClass targetClass = result.targetClass();
+                if (sourceClass == null || targetClass == null) {
+                    return;
+                }
 
                 List<BeanUtilHelper.Property> sourceProperties = result.sourceProperties();
                 List<BeanUtilHelper.Property> targetProperties = result.targetProperties();
@@ -181,6 +183,10 @@ public class ShowDiffPropertiesAction implements IntentionAction {
 
         PsiClass sourceClass = result.sourceClass();
         PsiClass targetClass = result.targetClass();
+
+        if (sourceClass == null || targetClass == null) {
+            return IntentionPreviewInfo.EMPTY;
+        }
 
         List<BeanUtilHelper.Property> sourceProperties = result.sourceProperties();
         List<BeanUtilHelper.Property> targetProperties = result.targetProperties();

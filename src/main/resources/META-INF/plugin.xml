@@ -107,17 +107,17 @@
     <extensions defaultExtensionNs="com.intellij">
         <intentionAction>
             <language>JAVA</language>
-            <className>com.xiaodingsiren.beanutilshelper.ShowCopyPropertiesAction</className>
+            <className>com.xiaodingsiren.beanutilshelper.action.ShowCopyPropertiesAction</className>
             <category>BeanUtilHelper</category>
         </intentionAction>
         <intentionAction>
             <language>JAVA</language>
-            <className>com.xiaodingsiren.beanutilshelper.ShowDiffPropertiesAction</className>
+            <className>com.xiaodingsiren.beanutilshelper.action.ShowDiffPropertiesAction</className>
             <category>BeanUtilHelper</category>
         </intentionAction>
         <intentionAction>
             <language>JAVA</language>
-            <className>com.xiaodingsiren.beanutilshelper.ToSetterAction</className>
+            <className>com.xiaodingsiren.beanutilshelper.action.ToSetterAction</className>
             <category>BeanUtilHelper</category>
         </intentionAction>
 
@@ -130,7 +130,7 @@
                 groupKey="group.names.javabeans.issues"
                 enabledByDefault="true"
                 level="WARNING"
-                implementationClass="com.xiaodingsiren.beanutilshelper.BeanUtilsInspection"
+                implementationClass="com.xiaodingsiren.beanutilshelper.inspection.BeanUtilsInspection"
         />
     </extensions>
     <resource-bundle>

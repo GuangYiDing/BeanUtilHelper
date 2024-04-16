@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.xiaodingsiren"
-version = "1.0.4-RELEASE"
+version = "1.0.5-RELEASE"
 
 repositories {
     mavenCentral()
@@ -13,8 +13,10 @@ repositories {
 
 
 dependencies {
-    implementation("cn.hutool:hutool-all:5.8.23")
+    implementation("cn.hutool:hutool-all:5.8.25")
     compileOnly("org.projectlombok:lombok:1.18.22")
+    implementation("commons-beanutils:commons-beanutils:1.9.4")
+    implementation("org.springframework:spring-beans:6.1.5")
     annotationProcessor("org.projectlombok:lombok:1.18.22")
 }
 

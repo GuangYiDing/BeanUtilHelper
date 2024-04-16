@@ -1,4 +1,4 @@
-package com.xiaodingsiren.beanutilshelper;
+package com.xiaodingsiren.beanutilshelper.inspection;
 
 import cn.hutool.core.collection.CollStreamUtil;
 import com.intellij.codeInspection.AbstractBaseJavaLocalInspectionTool;
@@ -6,6 +6,7 @@ import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.psi.*;
+import com.xiaodingsiren.beanutilshelper.BeanUtilHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -39,8 +40,16 @@ public class BeanUtilsInspection extends AbstractBaseJavaLocalInspectionTool {
                 if (canonicalText.startsWith(BeanUtilHelper.BEAN_UTIL_COPY_PROPERTIES) || canonicalText.startsWith(BeanUtilHelper.BEAN_UTILS_COPY_PROPERTIES)) {
                     BeanUtilHelper.Result invoke = BeanUtilHelper.invoke(expression);
 
+                    if (invoke == null) {
+                        return;
+                    }
+
                     PsiClass sourceClass = invoke.sourceClass();
                     PsiClass targetClass = invoke.targetClass();
+
+                    if (sourceClass == null || targetClass == null) {
+                        return;
+                    }
 
                     List<BeanUtilHelper.Property> sourceProperties = invoke.sourceProperties();
                     List<BeanUtilHelper.Property> targetProperties = invoke.targetProperties();
@@ -49,11 +58,11 @@ public class BeanUtilsInspection extends AbstractBaseJavaLocalInspectionTool {
 
                     Set<String> commonPropertyNames = BeanUtilHelper.findCommonPropertyNames(invoke);
                     List<String> ignoreProperties = invoke.ignoredProperties();
-                    if (ignoreProperties.size() > 0) {
+                    if (!ignoreProperties.isEmpty()) {
                         ignoreProperties.forEach(commonPropertyNames::remove);
                     }
 
-                    if (commonPropertyNames.size() == 0) {
+                    if (commonPropertyNames.isEmpty()) {
                         // 创建一个 ProblemDescriptor 来描述我们发现的问题
                         ProblemDescriptor problem = manager.createProblemDescriptor(
                                 expression,
@@ -68,8 +77,8 @@ public class BeanUtilsInspection extends AbstractBaseJavaLocalInspectionTool {
 
                     List<BeanUtilHelper.Property> sameNameNotSameType = sourceProperties.stream().filter(s -> s.mark().equals(BeanUtilHelper.Mark.SAME_NAME_NOT_SAME_TYPE)).toList();
 
-                    if (sameNameNotSameType.size() > 0) {
-                        String tips = sameNameNotSameType.stream().map(s -> s.toString() + s.mark().icon + targetPropertyMap.get(s.name()).toString()).collect(Collectors.joining("\n"));
+                    if (!sameNameNotSameType.isEmpty()) {
+                        String tips = sameNameNotSameType.stream().map(s -> s.toString() + s.mark().getIcon() + targetPropertyMap.get(s.name()).toString()).collect(Collectors.joining("\n"));
                         ProblemDescriptor problem = manager.createProblemDescriptor(
                                 expression,
                                 sourceClass.getName() + "与" + targetClass.getName() + "有同名但不同类型的属性:\n" + tips,

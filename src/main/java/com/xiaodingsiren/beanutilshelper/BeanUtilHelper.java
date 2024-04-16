@@ -1,16 +1,20 @@
 package com.xiaodingsiren.beanutilshelper;
 
-import cn.hutool.core.collection.CollStreamUtil;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.*;
-import com.intellij.psi.impl.source.PsiTypeElementImpl;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.psi.util.PsiTypesUtil;
-import com.intellij.psi.util.PsiUtil;
+import com.xiaodingsiren.beanutilshelper.strategy.ResolveStrategy;
+import com.xiaodingsiren.beanutilshelper.strategy.impl.ResolveApacheStrategyImpl;
+import com.xiaodingsiren.beanutilshelper.strategy.impl.ResolveDefaultStrategyImpl;
+import com.xiaodingsiren.beanutilshelper.strategy.impl.ResolveHutoolStrategyImpl;
+import com.xiaodingsiren.beanutilshelper.strategy.impl.ResolveSpringStrategyImpl;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,6 +27,14 @@ public class BeanUtilHelper {
     public static final String BEAN_UTIL_COPY_PROPERTIES = "BeanUtil.copyProperties";
     public static final String BEAN_UTILS_COPY_PROPERTIES = "BeanUtils.copyProperties";
     public static final String BEAN_UTIL_HELPER = "BeanUtilHelper";
+
+    public static final List<ResolveStrategy> resolveStrategies = List.of(
+            new ResolveApacheStrategyImpl(),
+            new ResolveSpringStrategyImpl(),
+            new ResolveHutoolStrategyImpl()
+    );
+
+
 
 
     public static boolean BeanUtilHelperIsAvailable(Editor editor, PsiFile psiFile) {
@@ -44,44 +56,38 @@ public class BeanUtilHelper {
             return false;
         }
         String canonicalText = methodCallExpression.getMethodExpression().getCanonicalText();
-        return canonicalText.startsWith(BEAN_UTIL_COPY_PROPERTIES) || canonicalText.startsWith(BEAN_UTILS_COPY_PROPERTIES);
+        return canonicalText.startsWith(BEAN_UTIL_COPY_PROPERTIES) ||
+               canonicalText.startsWith(BEAN_UTILS_COPY_PROPERTIES) ||
+               resolveStrategies.stream()
+                       .map(resolveStrategy -> resolveStrategy.qualifiedName() + ".copyProperties")
+                       .anyMatch(canonicalText::startsWith);
     }
+
+
+    public static String resolveQualifiedName(PsiMethodCallExpression methodCallExpression) {
+        PsiReferenceExpression methodExpression = methodCallExpression.getMethodExpression();
+        PsiElement resolvedMethod = methodExpression.resolve();
+        if (resolvedMethod instanceof PsiMethod method) {
+            PsiClass containingClass = method.getContainingClass();
+            if (containingClass != null) {
+                return containingClass.getQualifiedName();
+            }
+        }
+        return null;
+    }
+
 
 
     public static Result invoke(PsiMethodCallExpression methodCallExpression) {
         if (methodCallExpression == null) {
             return null;
         }
-        PsiExpression[] expressions = methodCallExpression.getArgumentList().getExpressions();
-        PsiClass sourceClass = PsiUtil.resolveClassInType(expressions[0].getType());
-        PsiClass targetClass = PsiUtil.resolveClassInType(expressions[1].getType());
-
-        // 处理 Class<T> tClass 参数
-        if (expressions[1] instanceof PsiClassObjectAccessExpression) {
-            targetClass = PsiTypesUtil.getPsiClass(((PsiTypeElementImpl) expressions[1].getFirstChild()).getType());
+        for (ResolveStrategy resolveStrategy : resolveStrategies) {
+            if (resolveStrategy.isSupport(methodCallExpression)) {
+                return resolveStrategy.resolve(methodCallExpression);
+            }
         }
-
-        if (sourceClass == null || targetClass == null) {
-            return null;
-        }
-
-        // 处理 ignoreProperties 参数
-        List<String> ignoreProperties = getIgnoreProperties(expressions);
-        // 先收集一遍
-        List<Property> sourceProperties = Stream.of(sourceClass.getAllFields())
-                .map(s -> new Property(s.getName(), s.getType(), null)).toList();
-        List<Property> targetProperties = Stream.of(targetClass.getAllFields())
-                .map(s -> new Property(s.getName(), s.getType(), null)).toList();
-
-        Map<String, BeanUtilHelper.Property> targetPropertyMap = CollStreamUtil.toIdentityMap(targetProperties, BeanUtilHelper.Property::name);
-        Map<String, BeanUtilHelper.Property> sourcePropertyMap = CollStreamUtil.toIdentityMap(sourceProperties, BeanUtilHelper.Property::name);
-
-        // 再标记一遍
-        sourceProperties = sourceProperties.stream().map(s -> markProperties(ignoreProperties, targetPropertyMap, s)).collect(Collectors.toList());
-        targetProperties = targetProperties.stream().map(s -> markProperties(ignoreProperties, sourcePropertyMap, s)).collect(Collectors.toList());
-
-        return new Result(sourceClass, targetClass, sourceProperties, targetProperties, ignoreProperties);
-
+        return new ResolveDefaultStrategyImpl().resolve(methodCallExpression);
     }
 
     public static Result invoke(Editor editor, PsiFile psiFile) {
@@ -92,7 +98,7 @@ public class BeanUtilHelper {
     }
 
     @NotNull
-    private static Property markProperties(List<String> ignoreProperties, Map<String, Property> propertyMap, Property s) {
+    public static Property markProperties(List<String> ignoreProperties, Map<String, Property> propertyMap, Property s) {
         Mark mark;
         // 是否是忽略的
         if (ignoreProperties.contains(s.name)) {
@@ -131,16 +137,15 @@ public class BeanUtilHelper {
     }
 
 
-    enum Mark {
+    @Getter
+    public enum Mark {
         SAME("green", " ✅ "),
         SAME_NAME_NOT_SAME_TYPE("orange", " ❓ "),
         IGNORED("gray", " 🚫 "),
         DIFF("gray", " ❌ "),
         ;
-        @Getter
-        final String color;
-        @Getter
-        final String icon;
+        public final String color;
+        public final String icon;
 
         Mark(String color, String icon) {
             this.color = color;
@@ -148,7 +153,7 @@ public class BeanUtilHelper {
         }
     }
 
-    record Property(String name, PsiType type, Mark mark) {
+    public record Property(String name, PsiType type, Mark mark) {
         @Override
         public String toString() {
             return this.getShortType() + " " + name;
@@ -172,7 +177,7 @@ public class BeanUtilHelper {
 
     }
 
-    record Result(PsiClass sourceClass, PsiClass targetClass,
+    public record Result(PsiClass sourceClass, PsiClass targetClass,
                   List<Property> sourceProperties, List<Property> targetProperties, List<String> ignoredProperties) {
     }
 
