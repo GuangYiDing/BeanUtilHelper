@@ -63,6 +63,13 @@
 
 <change-notes>
         <![CDATA[
+        <p>1.0.5-RELEASE</p>
+        <ul>
+           <li> feat: new support for Apache BeanUtils </li>
+        </ul>
+         <ul>
+            <li> feat: 添加对 Apache BeanUtils 的支持</li>
+        </ul>
         <p>1.0.4-RELEASE</p>
         <ul>
            <li> feat: Generate GetterSetter Code with One Click.</li>
