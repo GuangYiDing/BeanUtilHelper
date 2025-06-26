@@ -9,8 +9,6 @@ plugins {
     alias(libs.plugins.changelog) // Gradle Changelog Plugin
 }
 
-//group = "com.xiaodingsiren"
-//version = "1.0.6-RELEASE"
 
 group = providers.gradleProperty("pluginGroup").get()
 version = providers.gradleProperty("pluginVersion").get()
@@ -40,9 +38,9 @@ dependencies {
 
     // IntelliJ Platform Gradle Plugin Dependencies Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
     intellijPlatform {
-//        local("/Applications/IntelliJ\\ IDEA.app")
+        local("/Applications/IntelliJ IDEA.app/Contents")
 
-        create(providers.gradleProperty("platformType"), providers.gradleProperty("platformVersion"))
+//        create(providers.gradleProperty("platformType"), providers.gradleProperty("platformVersion"))
 
         // Plugin Dependencies. Uses `platformBundledPlugins` property from the gradle.properties file for bundled IntelliJ Platform plugins.
         bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { it.split(',') })
@@ -64,7 +62,8 @@ intellijPlatform {
 
         ideaVersion {
             sinceBuild = providers.gradleProperty("pluginSinceBuild")
-//            untilBuild = providers.gradleProperty("pluginUntilBuild")
+            // 不限制最终版本
+            // untilBuild = providers.gradleProperty("pluginUntilBuild")
         }
     }
 
@@ -107,21 +106,6 @@ tasks {
 
 intellijPlatformTesting {
     runIde {
-//        register("runIde") {
-//            task {
-//                jvmArgumentProviders += CommandLineArgumentProvider {
-//                    listOf(
-//                        "--add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED",
-//                        "--add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED",
-//                        "-javaagent:/Applications/mac2022-2023/ja-netfilter.jar=jetbrains"
-//                    )
-//                }
-//            }
-//
-//            plugins {
-//                robotServerPlugin()
-//            }
-//        }
 
         register("runIdeForUiTests") {
             task {
